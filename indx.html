@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serenade of the Seas • Baja & Sea of Cortez Cruise Planner (Res #5527483)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        ocean: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            950: '#042f2e',
+                        },
+                        royal: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#0f172a',
+                        },
+                        sunset: {
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(1.5deg); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .progress-shimmer {
+            background: linear-gradient(90deg, #0d9488 0%, #2dd4bf 50%, #0284c7 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+        }
+        .progress-complete {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #f59e0b 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        .item-row {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .checkbox-pop {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .checkbox-pop:active {
+            transform: scale(0.85);
+        }
+        /* Hide scrollbars on horizontal day filter strip */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Boarding Pass Perforation Styling */
+        .ticket-Perf {
+            background-image: radial-gradient(circle at 0 50%, rgba(15, 23, 42, 0.85) 8px, transparent 9px),
+                              radial-gradient(circle at 100% 50%, rgba(15, 23, 42, 0.85) 8px, transparent 9px);
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding-bottom: 0 !important;
+            }
+            header, .sticky, #navTab-checklist, #navTab-itinerary, #navTab-ship, 
+            #addItemForm, .item-row button, #toastContainer, #shareTripModal, 
+            #uncheckModal, #resetDefaultModal, .no-print {
+                display: none !important;
+            }
+            .print-only-header {
+                display: block !important;
+            }
+            #view-checklist {
+                display: block !important;
+            }
+            #categoriesContainer {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            .item-row {
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid;
+                padding: 6px 10px !important;
+            }
+        }
+        .print-only-header {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-24 selection:bg-ocean-200 selection:text-ocean-900">
+
+    <!-- Print Only Header -->
+    <div class="print-only-header p-4 mb-4 border-b-2 border-slate-800">
+        <h1 class="text-2xl font-bold">Royal Caribbean • Serenade of the Seas</h1>
+        <p class="text-sm">Reservation #5527483 | Stateroom #4030 (Deck 4) | 8-Day Baja & Sea of Cortez</p>
+        <p class="text-xs text-slate-600 mt-1">San Diego • Ensenada • Cabo San Lucas • La Paz • San Diego</p>
+    </div>
+
+    <!-- Hero Header with Embedded Digital Boarding Pass -->
+    <header class="relative bg-gradient-to-br from-slate-950 via-royal-900 to-ocean-900 text-white overflow-hidden shadow-xl no-print">
+        <!-- Decorative Ambient Glows -->
+        <div class="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-sunset-500 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -mb-16 -ml-16 w-96 h-96 bg-ocean-400 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6 relative z-10">
+            <!-- Top Bar: Title & Quick Reset Controls -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <div class="flex items-start sm:items-center gap-4">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-ocean-500 via-teal-400 to-sky-400 flex items-center justify-center shadow-lg shadow-slate-950/60 border border-white/25 animate-float shrink-0">
+                        <i class="ph-duotone ph-boat text-3xl sm:text-4xl text-white"></i>
+                    </div>
+                    <div>
+                        <div class="inline-flex flex-wrap items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold tracking-wide uppercase bg-white/10 text-ocean-200 border border-white/15 mb-1.5">
+                            <i class="ph-fill ph-crown-simple text-amber-400 text-sm"></i>
+                            <span>Royal Caribbean • Serenade of the Seas</span>
+                        </div>
+                        <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                            Baja & Sea of Cortez Cruise Planner
+                        </h1>
+                        <p class="text-ocean-100/85 text-xs sm:text-sm mt-0.5">
+                            San Diego • Ensenada • Cabo San Lucas • La Paz • 7 Nights / 8 Days
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons: 1-Click Copy Share Link & Modals -->
+                <div class="flex flex-wrap items-center gap-2 self-start md:self-center">
+                    <button 
+                        onclick="copyShareableWebLink()" 
+                        id="headerShareLinkBtn"
+                        class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-400 to-ocean-400 hover:from-teal-300 hover:to-ocean-300 active:scale-95 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-ocean-950/40 border border-teal-300 transition flex items-center gap-2"
+                        title="Copy direct shareable web link with your current packed status"
+                    >
+                        <i class="ph-bold ph-link text-base text-slate-950"></i>
+                        <span id="headerShareLinkText">Copy Share Link</span>
+                    </button>
+                    <button 
+                        onclick="openShareTripModal()" 
+                        class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-95 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-amber-950/40 border border-amber-300 transition flex items-center gap-2"
+                        title="Send trip details, reservation & checklist to the cruiser"
+                    >
+                        <i class="ph-bold ph-paper-plane-tilt text-base text-slate-950"></i>
+                        <span>Send to Cruiser</span>
+                    </button>
+                    <button onclick="openModal('uncheckModal')" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs sm:text-sm font-medium border border-white/15 transition flex items-center gap-1.5 backdrop-blur-sm">
+                        <i class="ph ph-arrow-counter-clockwise text-base"></i>
+                        <span>Uncheck All</span>
+                    </button>
+                    <button onclick="openModal('resetDefaultModal')" class="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 active:scale-95 text-rose-100 text-xs sm:text-sm font-medium border border-rose-400/30 transition flex items-center gap-1.5 backdrop-blur-sm" title="Restore default Serenade of the Seas packing list">
+                        <i class="ph ph-sparkle text-base"></i>
+                        <span>Restore Defaults</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Digital Boarding Pass / Cruise Manifest Card -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl overflow-hidden">
+                <!-- Boarding Pass Top Strip -->
+                <div class="bg-gradient-to-r from-royal-950/80 via-slate-900/80 to-ocean-950/80 px-4 sm:px-6 py-2.5 border-b border-white/15 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-ocean-200">SetSail Pass & Manifest Summary</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-slate-300">
+                        <span class="inline-flex items-center gap-1"><i class="ph-fill ph-anchor text-ocean-300"></i> Radiance Class</span>
+                        <span class="hidden sm:inline text-white/30">•</span>
+                        <span class="inline-flex items-center gap-1"><i class="ph-fill ph-map-pin text-sunset-400"></i> Port of San Diego (Broadway Pier / B St)</span>
+                    </div>
+                </div>
+
+                <!-- Boarding Pass Main Grid -->
+                <div class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
+                    
+                    <!-- 1. Reservation Number with One-Click Copy -->
+                    <div class="bg-slate-950/45 rounded-xl p-3.5 border border-white/10 flex items-center justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-ocean-300 block">Reservation Number</span>
+                            <div class="font-mono text-xl sm:text-2xl font-bold text-white tracking-wider mt-0.5" id="resNumberText">5527483</div>
+                            <span class="text-[11px] text-emerald-300 font-medium inline-flex items-center gap-1 mt-0.5">
+                                <i class="ph-fill ph-check-circle"></i> Confirmed Booking
+                            </span>
+                        </div>
+                        <button 
+                            onclick="copyReservationNumber()" 
+                            class="px-3 py-2 rounded-xl bg-ocean-500/20 hover:bg-ocean-500/40 active:scale-95 border border-ocean-400/30 text-ocean-100 text-xs font-semibold transition flex flex-col items-center gap-1 shrink-0"
+                            title="Copy Reservation #5527483 to clipboard"
+                        >
+                            <i id="copyIcon" class="ph-bold ph-copy text-lg"></i>
+                            <span id="copyBtnLabel" class="text-[10px]">Copy #</span>
+                        </button>
+                    </div>
+
+                    <!-- 2. Stateroom & Deck Info -->
+                    <div class="bg-slate-950/45 rounded-xl p-3.5 border border-white/10 flex items-center justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-ocean-300 block">Assigned Stateroom</span>
+                            <div class="flex items-baseline gap-2 mt-0.5">
+                                <span class="font-mono text-xl sm:text-2xl font-bold text-amber-300">#4030</span>
+                                <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/30">Deck 4</span>
+                            </div>
+                            <span class="text-[11px] text-slate-300 block mt-0.5">Near Tropical Theatre & Dining</span>
+                        </div>
+                        <button 
+                            onclick="switchMainView('ship')" 
+                            class="px-2.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition flex flex-col items-center gap-1 shrink-0"
+                            title="View Stateroom 4030 & Deck 4 Perks"
+                        >
+                            <i class="ph-duotone ph-compass text-lg text-amber-300"></i>
+                            <span class="text-[10px]">Deck 4 Info</span>
+                        </button>
+                    </div>
+
+                    <!-- 3. Vessel Info -->
+                    <div class="bg-slate-950/45 rounded-xl p-3.5 border border-white/10">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-ocean-300 block">Cruise Vessel</span>
+                        <div class="font-display text-lg sm:text-xl font-extrabold text-white mt-0.5 truncate">Serenade of the Seas</div>
+                        <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-300">
+                            <span class="inline-flex items-center gap-1"><i class="ph-fill ph-wall text-teal-300"></i> Magnetic Walls</span>
+                            <span>•</span>
+                            <span class="inline-flex items-center gap-1"><i class="ph-fill ph-plug text-amber-300"></i> Non-Surge Only</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Route Quick Overview & Share Link -->
+                    <div class="bg-slate-950/45 rounded-xl p-3.5 border border-white/10">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-ocean-300 block">8-Day Baja Itinerary</span>
+                            <button onclick="openShareTripModal()" class="text-[11px] text-amber-300 hover:text-amber-200 font-bold inline-flex items-center gap-1 underline underline-offset-2">
+                    <!-- Action Buttons & Prominent Send Button -->
+                    <div class="flex flex-wrap items-center gap-2 self-start md:self-center">
+                        <button 
+                            onclick="openShareTripModal()" 
+                            class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-95 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-amber-950/40 border border-amber-300 transition flex items-center gap-2"
+                            title="Send trip details, reservation & checklist to the cruiser via Gmail"
+                        >
+                            <i class="ph-bold ph-envelope-simple text-base text-slate-950"></i>
+                            <span>Send via Gmail</span>
+                        </button>
+                        <button onclick="openModal('uncheckModal')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs sm:text-sm font-medium border border-white/15 transition flex items-center gap-1.5 backdrop-blur-sm">
+                            <i class="ph ph-arrow-counter-clockwise text-base"></i>
+                            <span>Uncheck All</span>
+                        </button>
+                        <button onclick="openModal('resetDefaultModal')" class="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 active:scale-95 text-rose-100 text-xs sm:text-sm font-medium border border-rose-400/30 transition flex items-center gap-1.5 backdrop-blur-sm" title="Restore default Serenade of the Seas packing list">
+                            <i class="ph ph-sparkle text-base"></i>
+                            <span>Restore Defaults</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main View Navigation Tabs -->
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button 
+                        onclick="switchMainView('checklist')" 
+                        id="navTab-checklist" 
+                        class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white text-slate-900 shadow-lg"
+                    >
+                        <i class="ph-fill ph-suitcase-rolling text-lg text-ocean-600"></i>
+                        <span>1. Packing Checklist</span>
+                        <span id="navBadge-checklist" class="px-2 py-0.5 rounded-full text-[11px] bg-ocean-100 text-ocean-800 font-extrabold">0%</span>
+                    </button>
+                    <button 
+                        onclick="switchMainView('itinerary')" 
+                        id="navTab-itinerary" 
+                        class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15"
+                    >
+                        <i class="ph-fill ph-map-trifold text-lg text-amber-300"></i>
+                        <span>2. 8-Day Route & Port Gear</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] bg-white/15 text-ocean-100">Days 1–8</span>
+                    </button>
+                    <button 
+                        onclick="switchMainView('ship')" 
+                        id="navTab-ship" 
+                        class="px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15"
+                    >
+                        <i class="ph-fill ph-compass text-lg text-sky-300"></i>
+                        <span>3. Deck 4 (#4030) & Ship Guide</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Send Icon in Tab Bar -->
+                <button 
+                    onclick="openShareTripModal()" 
+                    class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-200 border border-amber-300/40 text-xs font-bold transition flex items-center gap-1.5"
+                >
+                    <i class="ph-bold ph-export text-base"></i>
+                    <span>Export / Send Summary</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom decorative wave divider -->
+        <svg class="w-full h-5 sm:h-7 text-slate-50 fill-current block" viewBox="0 0 1440 48" preserveAspectRatio="none">
+            <path d="M0,48 L1440,48 L1440,16 C1200,44 960,0 720,16 C480,32 240,4 0,24 L0,48 Z"></path>
+        </svg>
+    </header>
+
+    <!-- Sticky Overall Completion Progress Bar -->
+    <div class="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm transition-all">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3">
+            <div class="bg-white rounded-2xl p-3.5 sm:p-4 shadow-md border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <span id="statusEmoji" class="text-2xl sm:text-3xl select-none">⚓</span>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="font-display font-bold text-slate-800 text-xs sm:text-sm uppercase tracking-wider">Serenade Readiness • Stateroom 4030</h2>
+                                <span id="milestoneBadge" class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-ocean-100 text-ocean-800 border border-ocean-200">
+                                    Broadway Pier
+                                </span>
+                            </div>
+                            <p id="statusMessage" class="text-xs text-slate-500 font-medium">
+                                Ready to pack for Reservation #5527483! Start with your SetSail Pass & Passport.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-baseline gap-3 self-end sm:self-center">
+                        <div class="text-right">
+                            <span id="packedCountText" class="text-xs sm:text-sm font-semibold text-slate-600">0 of 0 items packed</span>
+                            <span id="totalQtyText" class="block text-[11px] text-slate-400">0 total pieces</span>
+                        </div>
+                        <div id="percentageDisplay" class="font-display text-2xl sm:text-3xl font-extrabold text-ocean-600 tabular-nums">
+                            0%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animated Progress Track -->
+                <div class="relative w-full h-3.5 sm:h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/60">
+                    <div class="absolute inset-0 flex justify-between px-[25%] pointer-events-none z-10">
+                        <div class="h-full w-px bg-white/60"></div>
+                        <div class="h-full w-px bg-white/60"></div>
+                        <div class="h-full w-px bg-white/60"></div>
+                    </div>
+                    <div id="mainProgressBar" class="h-full progress-shimmer rounded-full transition-all duration-500 ease-out flex items-center justify-end pr-2" style="width: 0%">
+                        <i id="shipProgressIcon" class="ph-fill ph-sailboat text-white text-[10px] hidden"></i>
+                    </div>
+                </div>
+
+                <!-- Category Mini-Progress Pills Bar -->
+                <div id="miniCategoryProgressContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mt-3 pt-2.5 border-t border-slate-100">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
+
+        <!-- ==========================================
+             VIEW 1: INTERACTIVE PACKING CHECKLIST
+             ========================================== -->
+        <div id="view-checklist" class="space-y-6">
+
+            <!-- Control Bar: Status Filter, Day Filter, Search & Custom Item Creator -->
+            <section class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 space-y-4">
+                
+                <!-- Top Row: Status Tabs + Search Input -->
+                <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5">
+                    <!-- Status Filter Tabs -->
+                    <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/60 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-start">
+                        <button onclick="setFilter('all')" id="filter-all" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-ocean-700 shadow-sm">
+                            <i class="ph-bold ph-list-checks"></i>
+                            <span>All</span>
+                            <span id="badge-all" class="ml-1 px-1.5 py-0.2 rounded-md text-[11px] bg-ocean-100 text-ocean-800">0</span>
+                        </button>
+                        <button onclick="setFilter('remaining')" id="filter-remaining" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+                            <i class="ph-bold ph-suitcase"></i>
+                            <span>Remaining</span>
+                            <span id="badge-remaining" class="ml-1 px-1.5 py-0.2 rounded-md text-[11px] bg-slate-200 text-slate-700">0</span>
+                        </button>
+                        <button onclick="setFilter('packed')" id="filter-packed" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+                            <i class="ph-bold ph-check-circle"></i>
+                            <span>Packed</span>
+                            <span id="badge-packed" class="ml-1 px-1.5 py-0.2 rounded-md text-[11px] bg-slate-200 text-slate-700">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="relative flex-1 lg:max-w-md">
+                        <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            oninput="handleSearch(this.value)"
+                            placeholder="Search gear (e.g., 4030, GoPro, Cabo, gluten-free, lanyard)..." 
+                            class="w-full pl-10 pr-9 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:bg-white transition"
+                        >
+                        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <i class="ph-fill ph-x-circle text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Middle Row: Filter by Cruise Day Strip -->
+                <div class="pt-3 border-t border-slate-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="ph-fill ph-calendar-blank text-ocean-600"></i>
+                            Filter Packing List by Cruise Day / Port:
+                        </span>
+                        <button onclick="setDayFilter('all')" id="clearDayFilterBtn" class="hidden text-xs font-semibold text-ocean-600 hover:underline">
+                            Show All Days
+                        </button>
+                    </div>
+                    <div id="dayFilterStrip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                        <!-- Rendered dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Add Custom Item Form with Day Tag Selector -->
+                <form id="addItemForm" onsubmit="handleAddItem(event)" class="pt-3 border-t border-slate-100 flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
+                    <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ocean-700 shrink-0">
+                        <i class="ph-fill ph-plus-circle text-base text-ocean-600"></i>
+                        <span>Add Custom Gear:</span>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="customItemName" 
+                        required
+                        placeholder="Item name (e.g., Extra Camera Lens, Aloe Gel, Pesos)..." 
+                        class="flex-1 px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:bg-white transition"
+                    >
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5">
+                            <label for="customItemQty" class="text-xs text-slate-500 mr-1.5 font-medium">Qty:</label>
+                            <input 
+                                type="number" 
+                                id="customItemQty" 
+                                min="1" 
+                                max="99" 
+                                value="1" 
+                                class="w-10 text-center bg-transparent text-sm font-semibold text-slate-800 focus:outline-none"
+                            >
+                        </div>
+                        <select 
+                            id="customItemCategory" 
+                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:bg-white transition flex-1 sm:flex-initial"
+                        >
+                            <option value="boarding">Boarding & Docs (#5527483)</option>
+                            <option value="clothing">Clothing (7 Nights / 8 Days)</option>
+                            <option value="footwear">Footwear</option>
+                            <option value="tech">Camera, Optics & Tech</option>
+                            <option value="port">Port Days & Beach Gear</option>
+                            <option value="cabin">Stateroom 4030 & Toiletries</option>
+                        </select>
+                        <select 
+                            id="customItemDay" 
+                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:bg-white transition flex-1 sm:flex-initial"
+                        >
+                            <option value="all">Every Day / General</option>
+                            <option value="day1">Day 1: San Diego</option>
+                            <option value="day2">Day 2: Ensenada</option>
+                            <option value="day3">Day 3: Sea Day South</option>
+                            <option value="day4">Day 4: Cabo (Tender)</option>
+                            <option value="day5">Day 5: La Paz</option>
+                            <option value="day6">Day 6: Sea Day</option>
+                            <option value="day7">Day 7: Northbound Sea</option>
+                            <option value="day8">Day 8: Disembark</option>
+                        </select>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 bg-gradient-to-r from-ocean-600 to-teal-500 hover:from-ocean-700 hover:to-teal-600 active:scale-95 text-white font-semibold text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 shrink-0 w-full sm:w-auto"
+                        >
+                            <i class="ph-bold ph-plus"></i>
+                            <span>Add Item</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Empty State (When search/filters match nothing) -->
+            <div id="emptyState" class="hidden bg-white rounded-2xl p-10 text-center border border-slate-200/80 shadow-sm">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-ocean-50 text-ocean-600 flex items-center justify-center">
+                    <i class="ph-duotone ph-palm-tree text-4xl"></i>
+                </div>
+                <h3 id="emptyStateTitle" class="font-display font-bold text-lg text-slate-800">No matching items found</h3>
+                <p id="emptyStateSub" class="text-slate-500 text-sm mt-1 max-w-md mx-auto">
+                    Try adjusting your search or clearing the active day/status filter above.
+                </p>
+                <button onclick="resetFiltersAndSearch()" class="mt-4 px-4 py-2 rounded-xl bg-ocean-50 hover:bg-ocean-100 text-ocean-700 font-semibold text-xs transition">
+                    Reset All Filters
+                </button>
+            </div>
+
+            <!-- Categories Grid -->
+            <div id="categoriesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 2: 8-DAY ROUTE & PORT GEAR GUIDE
+             ========================================== -->
+        <div id="view-itinerary" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-royal-900 via-ocean-900 to-teal-900 rounded-2xl p-5 sm:p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/15 text-ocean-200">Interactive Port-by-Port Planner</span>
+                    <h2 class="font-display text-xl sm:text-2xl font-extrabold mt-1">8-Day Baja & Sea of Cortez Route Breakdown</h2>
+                    <p class="text-xs sm:text-sm text-ocean-100/90 mt-1">
+                        Check off day-specific essentials right inside each port card—it syncs live with your main packing checklist!
+                    </p>
+                </div>
+                <button onclick="switchMainView('checklist')" class="px-4 py-2.5 rounded-xl bg-white text-slate-900 font-bold text-xs sm:text-sm shadow hover:bg-ocean-50 transition flex items-center gap-2 self-start md:self-center shrink-0">
+                    <i class="ph-bold ph-list-checks text-ocean-600 text-base"></i>
+                    <span>Back to Full Checklist</span>
+                </button>
+            </div>
+
+            <!-- 8-Day Itinerary Cards Grid -->
+            <div id="itineraryCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 3: STATEROOM 4030 & SERENADE SHIP GUIDE
+             ========================================== -->
+        <div id="view-ship" class="hidden space-y-6">
+            <!-- Stateroom 4030 & Deck 4 Spotlight Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                <div class="bg-gradient-to-r from-slate-900 via-royal-900 to-ocean-900 p-5 sm:p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start sm:items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0">
+                            <i class="ph-duotone ph-door-open text-3xl"></i>
+                        </div>
+                        <div>
+                            <div class="inline-flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-400 text-slate-950">Stateroom #4030</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-white">Deck 4 • Forward/Midship</span>
+                            </div>
+                            <h2 class="font-display text-xl sm:text-2xl font-extrabold mt-1">Your Home at Sea on Serenade of the Seas</h2>
+                            <p class="text-xs sm:text-sm text-ocean-100/85 mt-0.5">Reservation #5527483 • Radiance Class Vessel</p>
+                        </div>
+                    </div>
+                    <button onclick="filterChecklistByCategory('cabin')" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm shadow transition flex items-center gap-2 self-start md:self-center shrink-0">
+                        <i class="ph-bold ph-magnet text-base"></i>
+                        <span>View Cabin #4030 Packing Items</span>
+                    </button>
+                </div>
+
+                <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/70">
+                        <div class="w-9 h-9 rounded-lg bg-ocean-100 text-ocean-700 flex items-center justify-center mb-2.5">
+                            <i class="ph-fill ph-elevator text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-slate-900 text-sm">Prime Deck 4 Location Perks</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            Stateroom <strong>4030</strong> on Deck 4 places you on the same level as the lower <strong>Tropical Theatre</strong> (forward) and the <strong>Reflections Main Dining Room</strong> (aft), plus just one quick flight of stairs from the Centrum lobby and outdoor Promenade Deck (Deck 5)!
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/70">
+                        <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center mb-2.5">
+                            <i class="ph-fill ph-anchor text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-slate-900 text-sm">Low-Deck Motion Stability & Gangway</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            Being on <strong>Deck 4</strong> closer to the waterline means noticeably less side-to-side pitch and roll during windy northbound Pacific sea days (Days 6 & 7). You are also closest to the lower gangway and Cabo tender launch platforms!
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/70">
+                        <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center mb-2.5">
+                            <i class="ph-fill ph-plug-charging text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-slate-900 text-sm">Stateroom 4030 Power & Wall Hacks</h3>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            <em>Serenade of the Seas</em> staterooms have limited standard US 110V outlets at the vanity desk. Bring a <strong>non-surge-protected USB charging block</strong> for your DSLR & GoPro batteries, and use <strong>heavy-duty magnetic hooks</strong> on the steel cabin walls!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Serenade of the Seas Ship Highlights & Matching Gear -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center">
+                            <i class="ph-duotone ph-binoculars text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-slate-900">Serenade of the Seas Features to Pack For</h3>
+                            <p class="text-xs text-slate-500">Radiance-class glass walls & outdoor deck activities</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-xs sm:text-sm text-slate-700">
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-check-circle text-ocean-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Rock Climbing Wall (Deck 13):</strong> Requires dry athletic socks and shorts/t-shirt. We included athletic socks in your clothing checklist!</div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-check-circle text-ocean-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Adults-Only Solarium & Pool Deck (Deck 11):</strong> Glass-canopied tropical pool area—bring 2–3 swimsuits and towel clips for breezy upper decks.</div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-check-circle text-ocean-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Helipad Bow Access (Deck 5 Forward):</strong> Walk out to the very front bow of the ship during San Diego sail-away (past Point Loma & NAS North Island) and Cabo arrival!</div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-check-circle text-ocean-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Safari Club & Panoramic Glass Elevators:</strong> Amazing aft wake views for spotting whales and dolphins with your binoculars on Sea Days 3, 6 & 7.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center">
+                            <i class="ph-duotone ph-shield-check text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-slate-900">Dietary, Port & Prohibited Items Reminders</h3>
+                            <p class="text-xs text-slate-500">Smooth sailing tips for Mexico & Royal Caribbean</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-xs sm:text-sm text-slate-700">
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-Seal-Check text-emerald-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Gluten-Free Dining & Port Snacks:</strong> Reflections Dining Room (Deck 4) & Windjammer Marketplace offer dedicated gluten-free options. For shore days in Ensenada, Cabo, and La Paz, only bring <strong>factory-sealed</strong> gluten-free snacks off the ship (no loose fruit or open food allowed through Mexican agricultural inspection).</div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-warning text-amber-500 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>No Surge Protectors or Clothing Irons:</strong> Royal Caribbean strictly prohibits surge-protected power strips and travel steamers/irons. Pack a <strong>non-surge USB hub</strong> and <strong>wrinkle-release spray</strong> instead.</div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="ph-fill ph-clock-countdown text-sky-600 text-base mt-0.5 shrink-0"></i>
+                            <div><strong>Keep Watch on "Ship Time":</strong> In Cabo San Lucas and La Paz, always keep your watch or phone locked to <em>Serenade of the Seas</em> ship time so you never miss the last tender boat!</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Uncheck All Items -->
+    <div id="uncheckModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex items-center gap-3.5 mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                    <i class="ph-duotone ph-arrow-counter-clockwise text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-lg text-slate-900">Uncheck All Packed Items?</h3>
+                    <p class="text-xs text-slate-500">Your custom items and quantities will be preserved.</p>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 mb-6">
+                This will reset all checkboxes back to 0% so you can start packing fresh for Reservation #5527483.
+            </p>
+            <div class="flex items-center justify-end gap-2.5">
+                <button onclick="closeModal('uncheckModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                    Cancel
+                </button>
+                <button onclick="confirmUncheckAll()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition">
+                    Yes, Uncheck All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Restore Default List -->
+    <div id="resetDefaultModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex items-center gap-3.5 mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                    <i class="ph-duotone ph-warning-circle text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-display font-bold text-lg text-slate-900">Restore Default Serenade List?</h3>
+                    <p class="text-xs text-slate-500">Resets custom additions, deletions, and progress.</p>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 mb-6">
+                This will restore the complete pre-loaded 8-Day *Serenade of the Seas* (Stateroom 4030) checklist and clear all checked boxes.
+            </p>
+            <div class="flex items-center justify-end gap-2.5">
+                <button onclick="closeModal('resetDefaultModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                    Cancel
+                </button>
+                <button onclick="confirmRestoreDefaults()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition">
+                    Restore Defaults
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Send / Share Trip to Cruiser -->
+    <div id="shareTripModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-8">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal('shareTripModal')" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition">
+                <i class="ph-bold ph-x text-base"></i>
+            </button>
+
+            <!-- Header -->
+            <div class="flex items-start gap-4 mb-5">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-md shadow-amber-200">
+                    <i class="ph-duotone ph-paper-plane-tilt text-2xl font-bold"></i>
+                </div>
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-ocean-100 text-ocean-800 border border-ocean-200">
+                        Serenade of the Seas Manifest Share
+                    </span>
+                    <h3 class="font-display font-extrabold text-xl sm:text-2xl text-slate-900 mt-1">
+                        Send Trip & Checklist to Cruiser
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        Share complete booking details (Res #5527483, Stateroom 4030) and live packing list.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Trip Summary Pill -->
+            <div class="bg-slate-900 rounded-2xl p-4 text-white mb-5 border border-slate-800">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-white/10 text-xs">
+                    <span class="text-ocean-300 font-bold uppercase tracking-wider">Vessel & Cabin</span>
+                    <span class="font-mono text-amber-300 font-bold">Res #5527483 • Stateroom 4030 (Deck 4)</span>
+                </div>
+                <div class="pt-2.5 flex items-center justify-between text-xs">
+                    <span class="text-slate-300" id="shareProgressSnippet">Calculating progress...</span>
+                    <span class="text-emerald-400 font-semibold" id="shareRemainingSnippet">0 items left</span>
+                </div>
+            </div>
+
+            <!-- Shareable Direct Web Link Card (Primary Highlight) -->
+            <div class="mb-5 p-4 rounded-2xl bg-gradient-to-br from-teal-50 to-ocean-50 border border-teal-200 shadow-sm">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-extrabold uppercase tracking-wider text-teal-900 flex items-center gap-1.5">
+                        <i class="ph-bold ph-link text-ocean-600 text-base"></i>
+                        <span>Direct Shareable App Link:</span>
+                    </label>
+                    <span class="text-[11px] font-semibold text-ocean-700 bg-teal-100/80 px-2 py-0.5 rounded-md">Live Progress Included</span>
+                </div>
+                <p class="text-xs text-slate-600 mb-2.5">
+                    Send this link to anyone via iMessage, WhatsApp, or email. Opening it instantly loads all your packed progress, cabin details, and itinerary!
+                </p>
+                <div class="flex items-center gap-2">
+                    <input 
+                        type="text" 
+                        id="shareLinkInput" 
+                        readonly 
+                        class="flex-1 px-3 py-2 bg-white border border-teal-200 rounded-xl text-xs font-mono text-slate-700 select-all focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        onclick="this.select()"
+                    >
+                    <button 
+                        type="button" 
+                        onclick="copyShareableWebLink('modal')" 
+                        id="modalCopyShareBtn" 
+                        class="px-3.5 py-2 rounded-xl bg-ocean-600 hover:bg-ocean-700 active:scale-95 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 shrink-0"
+                    >
+                        <i id="modalCopyShareIcon" class="ph-bold ph-copy"></i>
+                        <span id="modalCopyShareText">Copy Link</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recipient Email Section & Safe Gmail Composer -->
+            <div class="space-y-4">
+                <div>
+                    <label for="cruiserEmailInput" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center justify-between">
+                        <span>Cruiser's Email Address:</span>
+                        <span class="text-[11px] font-normal text-slate-400">Optional</span>
+                    </label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope text-slate-400 text-lg absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="email" 
+                            id="cruiserEmailInput" 
+                            placeholder="e.g. cruiser@example.com" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-ocean-500 focus:bg-white transition"
+                        >
+                    </div>
+                </div>
+
+                <!-- Action Button Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <!-- 1. Open in Gmail with Pre-filled Share Link & Safe Body -->
+                    <button 
+                        type="button" 
+                        onclick="sendViaGmailWeb()" 
+                        class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-600 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md shadow-rose-900/20 transition flex items-center justify-center gap-2"
+                        title="Opens Gmail composer with the share link and itinerary"
+                    >
+                        <i class="ph-fill ph-envelope-open text-base text-amber-200"></i>
+                        <span>Open in Gmail</span>
+                    </button>
+
+                    <!-- 2. Mobile Native Share (SMS, WhatsApp, AirDrop) -->
+                    <button 
+                        type="button" 
+                        onclick="shareViaWebShare()" 
+                        class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
+                    >
+                        <i class="ph-fill ph-share-network text-base text-amber-300"></i>
+                        <span>SMS / WhatsApp / AirDrop</span>
+                    </button>
+
+                    <!-- 3. Copy Text Summary -->
+                    <button 
+                        type="button" 
+                        onclick="copyFullPackingSummary()" 
+                        class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xs sm:text-sm border border-slate-200/80 transition flex items-center justify-center gap-2"
+                    >
+                        <i class="ph-bold ph-copy text-base text-ocean-600"></i>
+                        <span>Copy Text Summary</span>
+                    </button>
+
+                    <!-- 4. Default Mail App (mailto) -->
+                    <button 
+                        type="button" 
+                        onclick="sendEmailToCruiser()" 
+                        class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xs sm:text-sm border border-slate-200/80 transition flex items-center justify-center gap-2"
+                    >
+                        <i class="ph-bold ph-paper-plane text-base text-ocean-600"></i>
+                        <span>Default Mail (mailto)</span>
+                    </button>
+                </div>
+                
+                <div class="text-center pt-1">
+                    <button 
+                        type="button" 
+                        onclick="triggerPrintChecklist()" 
+                        class="text-xs font-semibold text-slate-500 hover:text-slate-800 underline underline-offset-2 inline-flex items-center gap-1.5"
+                    >
+                        <i class="ph-bold ph-printer"></i>
+                        <span>Or click here to Print / Save as PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Box Collapsible -->
+            <div class="mt-5 pt-4 border-t border-slate-100">
+                <details class="group text-xs text-slate-600">
+                    <summary class="cursor-pointer font-bold uppercase tracking-wider text-[11px] text-ocean-700 flex items-center justify-between select-none hover:text-ocean-900">
+                        <span>Preview Message Sent with Link:</span>
+                        <i class="ph-bold ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="mt-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80 max-h-40 overflow-y-auto font-mono text-[11px] text-slate-700 whitespace-pre-wrap leading-relaxed" id="messagePreviewArea">
+                        Generating preview...
+                    </div>
+                </details>
+            </div>
+
+            <!-- Footer close -->
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeModal('shareTripModal')" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+    <script>
+        const STORAGE_KEY = 'serenade_5527483_packing_v2';
+
+        // 8-Day Route & Port Definitions
+        const CRUISE_DAYS = [
+            {
+                id: 'day1',
+                shortLabel: 'Day 1: San Diego',
+                dayNum: 'Day 1',
+                port: 'San Diego, California (Embarkation)',
+                weather: 'Sunny & Mild Coastal (68–74°F)',
+                icon: 'ph-anchor',
+                badgeColor: 'bg-sky-100 text-sky-800 border-sky-200',
+                summary: 'Board Serenade of the Seas at Broadway Pier / B Street Cruise Terminal. Drop carry-on bags at Stateroom 4030 (Deck 4) when cabins open at ~1:00 PM. Head out to the Deck 5 forward helipad at sail-away for views of Point Loma, Cabrillo National Monument, and military aircraft at NAS North Island!'
+            },
+            {
+                id: 'day2',
+                shortLabel: 'Day 2: Ensenada',
+                dayNum: 'Day 2',
+                port: 'Ensenada, Baja California, Mexico',
+                weather: 'Cooler Pacific Breeze (65–72°F)',
+                icon: 'ph-Buildings',
+                badgeColor: 'bg-teal-100 text-teal-800 border-teal-200',
+                summary: 'First Mexican port of call! Morning marine layer can feel brisk off the Pacific. Wear broken-in walking shoes for the Malecón, La Bufadora blowhole, or coastal excursions, and bring a light windbreaker.'
+            },
+            {
+                id: 'day3',
+                shortLabel: 'Day 3: Sea Day South',
+                dayNum: 'Day 3',
+                port: 'Cruising Southbound along Baja Peninsula',
+                weather: 'Warming Sunshine & Gentle Swell (75–80°F)',
+                icon: 'ph-binoculars',
+                badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                summary: 'Full day cruising south down the Baja coast. Prime wildlife watching from the Promenade (Deck 5) or Safari Club (Deck 6)—keep your DSLR zoom lens and binoculars ready for humpback/gray whales, huge pods of Pacific dolphins, frigatebirds, and brown boobies.'
+            },
+            {
+                id: 'day4',
+                shortLabel: 'Day 4: Cabo (Tender)',
+                dayNum: 'Day 4',
+                port: 'Cabo San Lucas, Mexico (Tender Port)',
+                weather: 'Warm & Sunny Tropical Cape (80–86°F)',
+                icon: 'ph-boat',
+                badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+                summary: 'Serenade of the Seas anchors offshore near El Arco (Land’s End). Since Stateroom 4030 is on Deck 4, you are super close to the tender launch platform! Pack a water-resistant dry bag, GoPro with floating hand grip, water shoes, and reef-safe sunscreen for Pelican Rock or Medano Beach.'
+            },
+            {
+                id: 'day5',
+                shortLabel: 'Day 5: La Paz',
+                dayNum: 'Day 5',
+                port: 'La Paz, Mexico (Sea of Cortez)',
+                weather: 'Warm & Calm Turquoise Water (82–88°F)',
+                icon: 'ph-sun-horizon',
+                badgeColor: 'bg-orange-100 text-orange-800 border-orange-200',
+                summary: 'Welcome to the "Aquarium of the World"! Ships dock at Puerto Pichilingue with shuttle access into La Paz and Balandra Beach. Wear polarized sunglasses to cut surface glare and spot roosterfish, rays, and sea lions in shallow crystal-clear water, plus a UV rash guard and wide-brim hat.'
+            },
+            {
+                id: 'day6',
+                shortLabel: 'Day 6: Sea Day (Cape)',
+                dayNum: 'Day 6',
+                port: 'Cruising • Rounding Land’s End Northbound',
+                weather: 'Sunny Pool Deck & Evening Breeze (76–82°F)',
+                icon: 'ph-sparkle',
+                badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+                summary: 'Cruising out of the Sea of Cortez and turning north. Great day to climb the Serenade Rock Wall on Deck 13 (bring athletic socks!), play mini-golf, relax in the Solarium, and dress up for evening dining in Reflections Dining Room right on Deck 4.'
+            },
+            {
+                id: 'day7',
+                shortLabel: 'Day 7: Northbound Sea',
+                dayNum: 'Day 7',
+                port: 'Cruising Northbound Pacific Coast',
+                weather: 'Breezy & Cooler Pacific Current (64–70°F)',
+                icon: 'ph-wind',
+                badgeColor: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+                summary: 'Steaming north against the California Current creates brisk winds across the open decks—pack a warm hoodie or fleece jacket! Main checked bags go outside Stateroom 4030 by 10:00 PM tonight, so keep a small overnight carry-off bag for tonight’s pajamas and Day 8 clothes.'
+            },
+            {
+                id: 'day8',
+                shortLabel: 'Day 8: Disembark SAN',
+                dayNum: 'Day 8',
+                port: 'San Diego, California (Disembarkation)',
+                weather: 'Crisp Morning Bay Breeze (65–70°F)',
+                icon: 'ph-suitcase-rolling',
+                badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                summary: 'Morning arrival back into San Diego Bay. Enjoy one final breakfast, grab your overnight daypack and passport from Stateroom 4030, and enjoy an effortless walk-off from Deck 4!'
+            }
+        ];
+
+        // Category Definitions
+        const CATEGORIES = [
+            {
+                id: 'boarding',
+                title: 'Boarding & Documents (Res #5527483)',
+                subtitle: 'SetSail Pass, Stateroom 4030 luggage tags & port currency',
+                icon: 'ph-identification-badge',
+                badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
+                barColor: 'bg-sky-500',
+                headerBg: 'from-sky-500/10 to-transparent'
+            },
+            {
+                id: 'clothing',
+                title: 'Clothing (7 Nights / 8 Days)',
+                subtitle: 'Warm Sea of Cortez days,Deck 4 dining & breezy Pacific sea days',
+                icon: 'ph-t-shirt',
+                badgeBg: 'bg-teal-50 text-teal-700 border-teal-200',
+                barColor: 'bg-teal-500',
+                headerBg: 'from-teal-500/10 to-transparent'
+            },
+            {
+                id: 'footwear',
+                title: 'Footwear',
+                subtitle: 'Ensenada walking, Cabo tender boats, La Paz beaches & dining',
+                icon: 'ph-footprints',
+                badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+                barColor: 'bg-amber-500',
+                headerBg: 'from-amber-500/10 to-transparent'
+            },
+            {
+                id: 'tech',
+                title: 'Camera, Optics & Tech Gear',
+                subtitle: 'DSLR wildlife zoom, GoPro underwater rig & Cabin 4030 power',
+                icon: 'ph-camera',
+                badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                barColor: 'bg-indigo-500',
+                headerBg: 'from-indigo-500/10 to-transparent'
+            },
+            {
+                id: 'port',
+                title: 'Port Days & Beach Gear (Cabo & La Paz)',
+                subtitle: 'Tender dry bag, polarized optics, sun protection & GF snacks',
+                icon: 'ph-island',
+                badgeBg: 'bg-orange-50 text-orange-700 border-orange-200',
+                barColor: 'bg-orange-500',
+                headerBg: 'from-orange-500/10 to-transparent'
+            },
+            {
+                id: 'cabin',
+                title: 'Stateroom 4030 Hacks & Toiletries',
+                subtitle: 'Deck 4 magnetic hooks, motion prep & Night 7 carry-off bag',
+                icon: 'ph-first-aid-kit',
+                badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                barColor: 'bg-emerald-500',
+                headerBg: 'from-emerald-500/10 to-transparent'
+            }
+        ];
+
+        // Comprehensive Default Items Linked to Specific Cruise Days
+        const DEFAULT_ITEMS = [
+            // 1. Boarding & Documents (Res #5527483)
+            { id: 'b1', category: 'boarding', name: 'Passport / Government ID', note: 'Keep in your Day 1 carry-on daypack (never in checked luggage)', qty: 1, days: ['day1', 'day8'], packed: false },
+            { id: 'b2', category: 'boarding', name: 'Royal Caribbean SetSail Pass (Reservation #5527483)', note: 'Loaded in Royal Caribbean App + printed paper backup for Broadway Pier', qty: 1, days: ['day1'], packed: false },
+            { id: 'b3', category: 'boarding', name: 'Printed Luggage Tags for Stateroom 4030 (Deck 4)', note: 'Placed in clear plastic tag holders before arriving at San Diego terminal', qty: 2, days: ['day1'], packed: false },
+            { id: 'b4', category: 'boarding', name: 'Lanyard for SeaPass Keycard (Stateroom 4030)', note: 'Hands-free access to Cabin 4030 & gangway check-in at every port', qty: 1, days: ['day1', 'day2', 'day4', 'day5'], packed: false },
+            { id: 'b5', category: 'boarding', name: 'Small USD Bills ($1 & $5) & Mexican Pesos', note: 'For San Diego porters, Cabo water taxis, La Paz shuttles & room service', qty: 1, days: ['day1', 'day2', 'day4', 'day5'], packed: false },
+            { id: 'b6', category: 'boarding', name: 'Embarkation Daypack (Carry-On)', note: 'Holds passport, camera, meds & swimsuit until Stateroom 4030 opens at 1 PM', qty: 1, days: ['day1', 'day8'], packed: false },
+
+            // 2. Clothing (7 Nights / 8 Days)
+            { id: 'c1', category: 'clothing', name: 'Breathable Daytime T-Shirts & Polos', note: 'Lightweight fabrics for sunny Baja & Sea of Cortez days', qty: 8, days: ['day1', 'day2', 'day3', 'day4', 'day5', 'day6'], packed: false },
+            { id: 'c2', category: 'clothing', name: 'Casual Shorts / Boardwalk Shorts', note: 'Comfortable for ship exploration and Mexican port excursions', qty: 6, days: ['day1', 'day2', 'day3', 'day4', 'day5'], packed: false },
+            { id: 'c3', category: 'clothing', name: 'Swimsuits / Boardshorts', note: 'Pack 2–3 so you always have a dry suit for Cabo, La Paz & the Solarium', qty: 3, days: ['day1', 'day3', 'day4', 'day5', 'day6'], packed: false },
+            { id: 'c4', category: 'clothing', name: 'UPF 50+ Rash Guard / Sun Shirt', note: 'Crucial for high-UV snorkeling in Cabo San Lucas and shallow La Paz beaches', qty: 1, days: ['day4', 'day5'], packed: false },
+            { id: 'c5', category: 'clothing', name: 'Warm Hoodie / Fleece Jacket (Northbound Pacific Wind)', note: 'Essential for chilly Ensenada morning & windy Day 7 northbound sea day', qty: 1, days: ['day2', 'day7', 'day8'], packed: false },
+            { id: 'c6', category: 'clothing', name: 'Cruise Casual Dinner Outfits (Reflections Dining Room Deck 4)', note: 'Collared shirts, slacks, or sundresses—right down the hall from Cabin 4030!', qty: 5, days: ['day1', 'day2', 'day4', 'day5', 'day7'], packed: false },
+            { id: 'c7', category: 'clothing', name: '"Dress Your Best" / Formal Night Outfits', note: 'For Captain’s Welcome & Formal evenings onboard Serenade of the Seas', qty: 2, days: ['day3', 'day6'], packed: false },
+            { id: 'c8', category: 'clothing', name: 'Athletic Socks (Required for Serenade Rock Climbing Wall)', note: 'Plus 7–8 daily pairs for walking excursions in port', qty: 8, days: ['day2', 'day6', 'day7'], packed: false },
+            { id: 'c9', category: 'clothing', name: 'Underwear & Sleepwear (7 Nights)', note: 'Pack 1 extra day cushion in case of travel delays', qty: 8, days: ['day1', 'day7'], packed: false },
+
+            // 3. Footwear
+            { id: 'f1', category: 'footwear', name: 'Comfortable Walking Sneakers', note: 'Broken-in support for San Diego boarding, Ensenada Malecón & La Paz', qty: 1, days: ['day1', 'day2', 'day5', 'day8'], packed: false },
+            { id: 'f2', category: 'footwear', name: 'Secure Water Shoes / Amphibious Sandals', note: 'Must-have for stepping onto Cabo tender boats & rocky beaches in La Paz', qty: 1, days: ['day4', 'day5'], packed: false },
+            { id: 'f3', category: 'footwear', name: 'Non-Slip Pool Slides / Flip-Flops', note: 'Easy slip-on for Deck 11 Pool, Solarium & Windjammer runs', qty: 1, days: ['day1', 'day3', 'day6', 'day7'], packed: false },
+            { id: 'f4', category: 'footwear', name: 'Evening Dinner / Dress Shoes', note: 'For Reflections Main Dining Room & Tropical Theatre shows on Deck 4', qty: 1, days: ['day3', 'day6'], packed: false },
+
+            // 4. Camera, Optics & Tech Gear
+            { id: 't1', category: 'tech', name: 'DSLR Camera + Telephoto Zoom Lens', note: 'Capture NAS North Island aircraft (Day 1), El Arco (Day 4), whales & seabirds', qty: 1, days: ['day1', 'day3', 'day4', 'day5', 'day6'], packed: false },
+            { id: 't2', category: 'tech', name: 'GoPro Action Camera + Waterproof Housing & Floating Grip', note: 'Ready for Cabo snorkeling and Sea of Cortez marine life clips', qty: 1, days: ['day4', 'day5'], packed: false },
+            { id: 't3', category: 'tech', name: 'Compact Binoculars', note: 'Spot humpback whales, dolphins, frigatebirds, boobies & roosterfish boils', qty: 1, days: ['day1', 'day3', 'day5', 'day6', 'day7'], packed: false },
+            { id: 't4', category: 'tech', name: 'Extra High-Speed SD Cards & Charged Camera Batteries', note: 'Don’t run out of storage mid-whale breach or in Cabo!', qty: 3, days: ['day1', 'day3', 'day4', 'day5'], packed: false },
+            { id: 't5', category: 'tech', name: 'Non-Surge-Protected Multi-USB Charger Block', note: 'Stateroom 4030 has limited outlets (surge protectors are banned on ships)', qty: 1, days: ['day1', 'day3', 'day6'], packed: false },
+            { id: 't6', category: 'tech', name: 'Portable Power Bank + Charging Cables', note: 'Keep phone & GoPro topped up during full-day Cabo and La Paz excursions', qty: 1, days: ['day2', 'day4', 'day5'], packed: false },
+            { id: 't7', category: 'tech', name: 'Wristwatch Locked to "Ship Time"', note: 'Prevents phone auto-timezone confusion in Cabo & La Paz', qty: 1, days: ['day4', 'day5'], packed: false },
+
+            // 5. Port Days & Beach Gear (Ensenada, Cabo & La Paz)
+            { id: 'p1', category: 'port', name: 'Water-Resistant Dry Bag / Excursion Pack', note: 'Protects camera & phone from sea spray on Cabo tender boats & beach panga rides', qty: 1, days: ['day4', 'day5'], packed: false },
+            { id: 'p2', category: 'port', name: 'Polarized Sunglasses + Floating Retainer Strap', note: 'Cuts ocean glare to spot rays, roosterfish & turtles in clear La Paz water', qty: 1, days: ['day1', 'day3', 'day4', 'day5'], packed: false },
+            { id: 'p3', category: 'port', name: 'Reef-Safe Biodegradable Sunscreen & SPF Lip Balm', note: 'Required for swimming/snorkeling in Cabo & UNESCO Sea of Cortez reserves', qty: 2, days: ['day3', 'day4', 'day5', 'day6'], packed: false },
+            { id: 'p4', category: 'port', name: 'Wide-Brim Sun Hat / Cap with Chin Cord', note: 'Stays secure on breezy Baja boat rides and Serenade upper decks', qty: 1, days: ['day2', 'day3', 'day4', 'day5'], packed: false },
+            { id: 'p5', category: 'port', name: 'Factory-Sealed Gluten-Free Port Snacks', note: 'Pre-packaged GF bars/crackers allowed through Mexican port inspection', qty: 6, days: ['day2', 'day4', 'day5'], packed: false },
+            { id: 'p6', category: 'port', name: 'Insulated Refillable Water Bottle', note: 'Fill with ice and water before boarding tenders in Cabo & shuttles in La Paz', qty: 1, days: ['day2', 'day4', 'day5'], packed: false },
+            { id: 'p7', category: 'port', name: 'Towel Clips for Pool & Beach Loungers', note: 'Keeps towel anchored on windy Pacific sea days', qty: 4, days: ['day3', 'day5', 'day6'], packed: false },
+
+            // 6. Stateroom 4030 Hacks & Toiletries
+            { id: 'h1', category: 'cabin', name: 'Heavy-Duty Magnetic Hooks (for Stateroom 4030 Walls)', note: 'Cabin 4030 walls & ceiling are steel—hang wet swimsuits, hats & lanyards', qty: 6, days: ['day1'], packed: false },
+            { id: 'h2', category: 'cabin', name: 'Motion Sickness Wristbands / Non-Drowsy Meds', note: 'Helpful when crossing northbound Pacific swells on Days 6 & 7', qty: 1, days: ['day3', 'day6', 'day7'], packed: false },
+            { id: 'h3', category: 'cabin', name: 'Packable Overnight Bag for Night 7 Luggage Set-Out', note: 'Main suitcases go outside Cabin 4030 door on Night 7—keep PJs & Day 8 clothes in this!', qty: 1, days: ['day7', 'day8'], packed: false },
+            { id: 'h4', category: 'cabin', name: 'Toothbrush, Toothpaste & Daily Toiletries Kit', note: 'Deodorant, razor, hair care, skincare & travel-size bottles', qty: 1, days: ['day1', 'day7', 'day8'], packed: false },
+            { id: 'h5', category: 'cabin', name: 'Cooling Aloe Vera Gel & Mini First-Aid Kit', note: 'Band-aids, blister pads for port walks, pain reliever & after-sun care', qty: 1, days: ['day4', 'day5'], packed: false },
+            { id: 'h6', category: 'cabin', name: 'Travel Wrinkle-Release Spray', note: 'Steamers and irons are prohibited onboard Royal Caribbean ships', qty: 1, days: ['day1', 'day3', 'day6'], packed: false }
+        ];
+
+        // Application State
+        let state = {
+            items: [],
+            filter: 'all',      // 'all' | 'remaining' | 'packed'
+            dayFilter: 'all',   // 'all' | 'day1' ... 'day8'
+            searchQuery: '',
+            activeView: 'checklist', // 'checklist' | 'itinerary' | 'ship'
+            hasCelebrated100: false
+        };
+
+        // Generates a clean URL containing encoded state in the hash (#share=...)
+        function generateShareableLink() {
+            try {
+                // Compress state: store packed IDs and any custom items added
+                const packedIds = state.items.filter(i => i.packed).map(i => i.id);
+                const customItems = state.items.filter(i => i.id.startsWith('custom_')).map(i => ({
+                    id: i.id,
+                    c: i.category,
+                    n: i.name,
+                    q: i.qty,
+                    d: i.days || [],
+                    p: i.packed ? 1 : 0
+                }));
+
+                const payload = {
+                    res: '5527483',
+                    room: '4030',
+                    p: packedIds,
+                    c: customItems
+                };
+
+                const jsonStr = JSON.stringify(payload);
+                // Safe UTF-8 Base64 encoding
+                const encoded = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+                    return String.fromCharCode('0x' + p1);
+                }));
+
+                const baseUrl = window.location.href.split('#')[0].split('?')[0];
+                return `${baseUrl}#share=${encoded}`;
+            } catch (err) {
+                console.warn('Error generating share link:', err);
+                return window.location.href;
+            }
+        }
+
+        // Parse and hydrate state from URL hash if present
+        function loadStateFromURL() {
+            try {
+                const hash = window.location.hash;
+                if (!hash || !hash.includes('share=')) return false;
+
+                const rawEncoded = hash.split('share=')[1].split('&')[0];
+                if (!rawEncoded) return false;
+
+                const decodedJson = decodeURIComponent(Array.prototype.map.call(atob(rawEncoded), c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const data = JSON.parse(decodedJson);
+                if (!data) return false;
+
+                // Base items clone
+                const baseItems = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+
+                // Restore custom items if present
+                if (Array.isArray(data.c)) {
+                    data.c.forEach(ci => {
+                        baseItems.unshift({
+                            id: ci.id || ('custom_' + Date.now()),
+                            category: ci.c,
+                            name: ci.n,
+                            note: 'Custom added item for Serenade of the Seas',
+                            qty: ci.q || 1,
+                            days: ci.d || [],
+                            packed: !!ci.p
+                        });
+                    });
+                }
+
+                // Restore packed state
+                if (Array.isArray(data.p)) {
+                    const packedSet = new Set(data.p);
+                    baseItems.forEach(item => {
+                        if (packedSet.has(item.id)) {
+                            item.packed = true;
+                        }
+                    });
+                }
+
+                state.items = baseItems;
+                saveState();
+                return true;
+            } catch (err) {
+                console.warn('Could not parse share link hash:', err);
+                return false;
+            }
+        }
+
+        function copyShareableWebLink(source = 'header') {
+            const link = generateShareableLink();
+            const tempInput = document.createElement('textarea');
+            tempInput.value = link;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+
+            try {
+                document.execCommand('copy');
+                if (source === 'modal') {
+                    const btn = document.getElementById('modalCopyShareBtn');
+                    const text = document.getElementById('modalCopyShareText');
+                    const icon = document.getElementById('modalCopyShareIcon');
+                    if (text && icon) {
+                        text.textContent = 'Copied!';
+                        icon.className = 'ph-bold ph-check text-emerald-300';
+                        setTimeout(() => {
+                            text.textContent = 'Copy Link';
+                            icon.className = 'ph-bold ph-copy';
+                        }, 2200);
+                    }
+                } else {
+                    const btnText = document.getElementById('headerShareLinkText');
+                    if (btnText) {
+                        btnText.textContent = 'Link Copied!';
+                        setTimeout(() => {
+                            btnText.textContent = 'Copy Share Link';
+                        }, 2200);
+                    }
+                }
+                showToast('Shareable link copied to clipboard!', 'emerald');
+            } catch (e) {
+                showToast('Please copy link directly from the share window', 'ocean');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function loadState() {
+            // First check if a shared link is opened
+            if (loadStateFromURL()) {
+                showToast('Loaded shared cruise packing checklist from link!', 'emerald');
+                return;
+            }
+
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+                        state.items = parsed.items;
+                        state.hasCelebrated100 = !!parsed.hasCelebrated100;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load saved state:', e);
+            }
+            state.items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    items: state.items,
+                    hasCelebrated100: state.hasCelebrated100
+                }));
+            } catch (e) {
+                console.warn('Could not save state:', e);
+            }
+        }
+
+        // Copy Reservation Number (#5527483) using iframe-safe execCommand
+        function copyReservationNumber() {
+            const resNum = '5527483';
+            const tempInput = document.createElement('textarea');
+            tempInput.value = resNum;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                const icon = document.getElementById('copyIcon');
+                const label = document.getElementById('copyBtnLabel');
+                icon.className = 'ph-bold ph-check text-lg text-emerald-300';
+                label.textContent = 'Copied!';
+                showToast('Copied Reservation #5527483 to clipboard!', 'emerald');
+                setTimeout(() => {
+                    icon.className = 'ph-bold ph-copy text-lg';
+                    label.textContent = 'Copy #';
+                }, 2200);
+            } catch (err) {
+                showToast('Reservation #: 5527483', 'ocean');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // Switch between the 3 Main Views (Packing Checklist / 8-Day Route / Deck 4 & Ship Info)
+        function switchMainView(viewName) {
+            state.activeView = viewName;
+            const views = ['checklist', 'itinerary', 'ship'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const tab = document.getElementById(`navTab-${v}`);
+                if (v === viewName) {
+                    el.classList.remove('hidden');
+                    tab.className = 'px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white text-slate-900 shadow-lg';
+                } else {
+                    el.classList.add('hidden');
+                    tab.className = 'px-4 py-2.5 rounded-xl font-display font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15';
+                }
+            });
+
+            if (viewName === 'itinerary') {
+                renderItineraryView();
+            }
+        }
+
+        function filterChecklistByCategory(catId) {
+            switchMainView('checklist');
+            resetFiltersAndSearch();
+            setTimeout(() => {
+                const target = document.getElementById(`cat-${catId}`);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function updateDashboard() {
+            const totalItems = state.items.length;
+            const packedItems = state.items.filter(i => i.packed).length;
+            const remainingItems = totalItems - packedItems;
+            const percentage = totalItems === 0 ? 0 : Math.round((packedItems / totalItems) * 100);
+
+            const totalQty = state.items.reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
+            const packedQty = state.items.filter(i => i.packed).reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
+
+            // Update Filter Badges
+            document.getElementById('badge-all').textContent = totalItems;
+            document.getElementById('badge-remaining').textContent = remainingItems;
+            document.getElementById('badge-packed').textContent = packedItems;
+            document.getElementById('navBadge-checklist').textContent = `${percentage}%`;
+
+            // Update Progress Bar & Text
+            document.getElementById('packedCountText').textContent = `${packedItems} of ${totalItems} items packed`;
+            document.getElementById('totalQtyText').textContent = `${packedQty} of ${totalQty} total pieces ready`;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+
+            const mainBar = document.getElementById('mainProgressBar');
+            const shipIcon = document.getElementById('shipProgressIcon');
+            mainBar.style.width = `${percentage}%`;
+
+            if (percentage > 8) {
+                shipIcon.classList.remove('hidden');
+            } else {
+                shipIcon.classList.add('hidden');
+            }
+
+            if (percentage === 100 && totalItems > 0) {
+                mainBar.classList.remove('progress-shimmer');
+                mainBar.classList.add('progress-complete');
+            } else {
+                mainBar.classList.add('progress-shimmer');
+                mainBar.classList.remove('progress-complete');
+            }
+
+            // Dynamic Status Milestone Messages
+            const statusEmoji = document.getElementById('statusEmoji');
+            const statusMessage = document.getElementById('statusMessage');
+            const milestoneBadge = document.getElementById('milestoneBadge');
+
+            if (totalItems === 0) {
+                statusEmoji.textContent = '🧳';
+                milestoneBadge.textContent = 'Empty List';
+                statusMessage.textContent = 'Add some cruise essentials below to start packing!';
+            } else if (percentage === 0) {
+                statusEmoji.textContent = '⚓';
+                milestoneBadge.textContent = 'San Diego Pier';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-slate-100 text-slate-700 border border-slate-200';
+                statusMessage.textContent = 'Ready to pack for Stateroom 4030! Start with your SetSail Pass (#5527483) & Passport.';
+                state.hasCelebrated100 = false;
+            } else if (percentage < 25) {
+                statusEmoji.textContent = '🪪';
+                milestoneBadge.textContent = 'Check-In Ready';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-sky-100 text-sky-800 border border-sky-200';
+                statusMessage.textContent = 'Great start! Boarding documents and first outfits are coming together.';
+                state.hasCelebrated100 = false;
+            } else if (percentage < 50) {
+                statusEmoji.textContent = '🔭';
+                milestoneBadge.textContent = 'Ensenada Bound';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-teal-100 text-teal-800 border border-teal-200';
+                statusMessage.textContent = 'Making steady waves! Don’t forget your binoculars and DSLR zoom lens for Day 3.';
+                state.hasCelebrated100 = false;
+            } else if (percentage < 75) {
+                statusEmoji.textContent = '🏝️';
+                milestoneBadge.textContent = 'Cabo & El Arco';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200';
+                statusMessage.textContent = 'Over halfway! Tender dry bag, GoPro & polarized glasses are nearly ready for Cabo & La Paz.';
+                state.hasCelebrated100 = false;
+            } else if (percentage < 100) {
+                statusEmoji.textContent = '🐬';
+                milestoneBadge.textContent = 'Sea of Cortez';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-orange-100 text-orange-800 border border-orange-200';
+                statusMessage.textContent = 'Final boarding call for Stateroom 4030! Just a few final cabin essentials left.';
+                state.hasCelebrated100 = false;
+            } else {
+                statusEmoji.textContent = '🚢';
+                milestoneBadge.textContent = 'Bon Voyage #5527483!';
+                milestoneBadge.className = 'px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+                statusMessage.textContent = '100% Packed for Serenade of the Seas! Stateroom 4030, Cabo & La Paz await!';
+
+                if (!state.hasCelebrated100) {
+                    state.hasCelebrated100 = true;
+                    saveState();
+                    triggerCelebrationConfetti();
+                    showToast('🎉 100% Packed! Bon Voyage on Serenade of the Seas (Res #5527483)!', 'emerald');
+                }
+            }
+
+            // Render Mini Category Progress Bar Pills
+            const miniContainer = document.getElementById('miniCategoryProgressContainer');
+            miniContainer.innerHTML = CATEGORIES.map(cat => {
+                const catItems = state.items.filter(i => i.category === cat.id);
+                const catPacked = catItems.filter(i => i.packed).length;
+                const catTotal = catItems.length;
+                const catPct = catTotal === 0 ? 0 : Math.round((catPacked / catTotal) * 100);
+                const isDone = catTotal > 0 && catPacked === catTotal;
+
+                return `
+                    <button onclick="filterChecklistByCategory('${cat.id}')" class="text-left group bg-slate-50 hover:bg-slate-100/80 rounded-xl p-2 border border-slate-200/60 transition flex flex-col justify-between">
+                        <div class="flex items-center justify-between gap-1 mb-1">
+                            <span class="text-[11px] font-bold text-slate-700 truncate group-hover:text-ocean-700 transition">
+                                ${cat.title.split(' (')[0]}
+                            </span>
+                            <span class="text-[10px] font-bold ${isDone ? 'text-emerald-600' : 'text-slate-500'} shrink-0 tabular-nums">
+                                ${catPacked}/${catTotal}
+                            </span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="h-full ${isDone ? 'bg-emerald-500' : cat.barColor} transition-all duration-300" style="width: ${catPct}%"></div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderDayFilterStrip() {
+            const strip = document.getElementById('dayFilterStrip');
+            const clearBtn = document.getElementById('clearDayFilterBtn');
+
+            if (state.dayFilter !== 'all') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            const allBtnActive = state.dayFilter === 'all';
+            let html = `
+                <button 
+                    onclick="setDayFilter('all')" 
+                    class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 shrink-0 ${
+                        allBtnActive 
+                        ? 'bg-ocean-600 text-white shadow-xs' 
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }"
+                >
+                    <i class="ph-bold ph-calendar"></i>
+                    <span>All 8 Days</span>
+                </button>
+            `;
+
+            html += CRUISE_DAYS.map(d => {
+                const isActive = state.dayFilter === d.id;
+                const dayItems = state.items.filter(i => Array.isArray(i.days) && i.days.includes(d.id));
+                const dayPacked = dayItems.filter(i => i.packed).length;
+                const allDayDone = dayItems.length > 0 && dayPacked === dayItems.length;
+
+                return `
+                    <button 
+                        onclick="setDayFilter('${d.id}')" 
+                        class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center gap-1.5 shrink-0 border ${
+                            isActive 
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs' 
+                            : 'bg-white text-slate-700 border-slate-200 hover:border-ocean-300 hover:bg-ocean-50/40'
+                        }"
+                    >
+                        <i class="ph-fill ${allDayDone ? 'ph-check-circle text-emerald-500' : d.icon}"></i>
+                        <span>${d.shortLabel}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'} tabular-nums">
+                            ${dayPacked}/${dayItems.length}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+
+            strip.innerHTML = html;
+        }
+
+        function getDayBadgeLabel(dayId) {
+            const found = CRUISE_DAYS.find(d => d.id === dayId);
+            return found ? found.shortLabel : null;
+        }
+
+        function renderChecklist() {
+            renderDayFilterStrip();
+
+            const container = document.getElementById('categoriesContainer');
+            const emptyState = document.getElementById('emptyState');
+            const query = state.searchQuery.trim().toLowerCase();
+
+            let totalVisibleItems = 0;
+
+            const categoriesHTML = CATEGORIES.map(cat => {
+                const allCatItems = state.items.filter(item => item.category === cat.id);
+                const catPackedCount = allCatItems.filter(item => item.packed).length;
+                const catTotalCount = allCatItems.length;
+                const catPct = catTotalCount === 0 ? 0 : Math.round((catPackedCount / catTotalCount) * 100);
+                const isCatComplete = catTotalCount > 0 && catPackedCount === catTotalCount;
+
+                const visibleItems = allCatItems.filter(item => {
+                    const matchesStatus = 
+                        state.filter === 'all' ||
+                        (state.filter === 'remaining' && !item.packed) ||
+                        (state.filter === 'packed' && item.packed);
+
+                    const matchesDay =
+                        state.dayFilter === 'all' ||
+                        (Array.isArray(item.days) && item.days.includes(state.dayFilter));
+
+                    const matchesSearch = !query || 
+                        item.name.toLowerCase().includes(query) || 
+                        (item.note && item.note.toLowerCase().includes(query));
+
+                    return matchesStatus && matchesDay && matchesSearch;
+                });
+
+                totalVisibleItems += visibleItems.length;
+
+                if (visibleItems.length === 0 && (query !== '' || state.filter !== 'all' || state.dayFilter !== 'all')) {
+                    return '';
+                }
+
+                const itemsHTML = visibleItems.length === 0 
+                    ? `<div class="p-6 text-center text-slate-400 text-xs italic">No items in this category yet. Use the form above to add one!</div>`
+                    : visibleItems.map(item => {
+                        const dayBadgesHTML = Array.isArray(item.days) && item.days.length > 0
+                            ? `<div class="flex flex-wrap items-center gap-1 mt-1.5">
+                                ${item.days.map(dId => {
+                                    const label = getDayBadgeLabel(dId);
+                                    if (!label) return '';
+                                    const isHighlighted = state.dayFilter === dId;
+                                    return `<span onclick="event.preventDefault(); setDayFilter('${dId}')" class="cursor-pointer px-2 py-0.5 rounded-md text-[10px] font-semibold transition ${
+                                        item.packed 
+                                        ? 'bg-slate-100 text-slate-400' 
+                                        : isHighlighted
+                                            ? 'bg-slate-900 text-white'
+                                            : 'bg-ocean-50 text-ocean-700 border border-ocean-200/60 hover:bg-ocean-100'
+                                    }">${label}</span>`;
+                                }).join('')}
+                               </div>`
+                            : '';
+
+                        return `
+                        <div class="item-row group flex items-start sm:items-center justify-between gap-3 p-3.5 rounded-xl border ${item.packed ? 'bg-slate-50/70 border-slate-100' : 'bg-white border-slate-200/70 hover:border-ocean-300 hover:shadow-xs'}">
+                            
+                            <!-- Checkbox + Label + Day Tags -->
+                            <label class="flex items-start gap-3 cursor-pointer flex-1 select-none">
+                                <input 
+                                    type="checkbox" 
+                                    ${item.packed ? 'checked' : ''} 
+                                    onchange="toggleItem('${item.id}')"
+                                    class="sr-only peer"
+                                >
+                                <div class="checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0 ${
+                                    item.packed 
+                                    ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs' 
+                                    : 'border-slate-300 bg-white group-hover:border-ocean-500'
+                                }">
+                                    <i class="ph-bold ph-check text-sm ${item.packed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-semibold transition-all break-words ${item.packed ? 'line-through text-slate-400' : 'text-slate-800'}">
+                                        ${escapeHTML(item.name)}
+                                    </div>
+                                    ${item.note ? `
+                                        <p class="text-xs mt-0.5 transition-all ${item.packed ? 'text-slate-300 line-through' : 'text-slate-500'}">
+                                            ${escapeHTML(item.note)}
+                                        </p>
+                                    ` : ''}
+                                    ${dayBadgesHTML}
+                                </div>
+                            </label>
+
+                            <!-- Quantity Stepper & Delete -->
+                            <div class="flex items-center gap-1.5 shrink-0 self-center">
+                                <div class="inline-flex items-center rounded-lg border ${item.packed ? 'border-slate-200 bg-slate-100 text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-700'} p-0.5">
+                                    <button 
+                                        type="button"
+                                        onclick="adjustQty('${item.id}', -1)" 
+                                        class="w-6 h-6 rounded-md hover:bg-white hover:shadow-2xs flex items-center justify-center text-xs transition active:scale-90"
+                                        title="Decrease quantity"
+                                    >
+                                        <i class="ph-bold ph-minus"></i>
+                                    </button>
+                                    <span class="px-2 text-xs font-bold tabular-nums min-w-[28px] text-center">
+                                        ${item.qty}x
+                                    </span>
+                                    <button 
+                                        type="button"
+                                        onclick="adjustQty('${item.id}', 1)" 
+                                        class="w-6 h-6 rounded-md hover:bg-white hover:shadow-2xs flex items-center justify-center text-xs transition active:scale-90"
+                                        title="Increase quantity"
+                                    >
+                                        <i class="ph-bold ph-plus"></i>
+                                    </button>
+                                </div>
+
+                                <button 
+                                    type="button"
+                                    onclick="deleteItem('${item.id}')" 
+                                    class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition opacity-70 group-hover:opacity-100"
+                                    title="Remove item"
+                                >
+                                    <i class="ph ph-trash text-base"></i>
+                                </button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+
+                return `
+                    <section id="cat-${cat.id}" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col scroll-mt-44">
+                        <div class="p-4 sm:p-5 bg-gradient-to-r ${cat.headerBg} border-b border-slate-100">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl ${cat.badgeBg} border flex items-center justify-center shrink-0 shadow-2xs">
+                                        <i class="ph-duotone ${cat.icon} text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h3 class="font-display font-bold text-base sm:text-lg text-slate-900">
+                                                ${cat.title}
+                                            </h3>
+                                            ${isCatComplete ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700"><i class="ph-fill ph-check-circle"></i> Packed!</span>` : ''}
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-0.5">${cat.subtitle}</p>
+                                    </div>
+                                </div>
+
+                                <div class="text-right shrink-0">
+                                    <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold ${isCatComplete ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-700'} tabular-nums">
+                                        ${catPackedCount} / ${catTotalCount}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-3.5 flex items-center gap-3">
+                                <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full ${isCatComplete ? 'bg-emerald-500' : cat.barColor} transition-all duration-300" style="width: ${catPct}%"></div>
+                                </div>
+                                <button 
+                                    onclick="toggleAllInCategory('${cat.id}')" 
+                                    class="text-[11px] font-semibold text-ocean-700 hover:text-ocean-900 hover:underline shrink-0"
+                                >
+                                    ${isCatComplete ? 'Uncheck category' : 'Check all'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 space-y-2.5 flex-1 bg-slate-50/30">
+                            ${itemsHTML}
+                        </div>
+                    </section>
+                `;
+            }).join('');
+
+            container.innerHTML = categoriesHTML;
+
+            if (totalVisibleItems === 0) {
+                emptyState.classList.remove('hidden');
+                if (state.filter === 'packed' && !query && state.dayFilter === 'all') {
+                    document.getElementById('emptyStateTitle').textContent = 'No items packed yet';
+                    document.getElementById('emptyStateSub').textContent = 'Check off items as you place them into your luggage for Stateroom 4030.';
+                } else if (state.filter === 'remaining' && !query && state.dayFilter === 'all') {
+                    document.getElementById('emptyStateTitle').textContent = 'Every single item is packed! 🚢';
+                    document.getElementById('emptyStateSub').textContent = 'Reservation #5527483 is 100% ready for Broadway Pier in San Diego!';
+                } else {
+                    document.getElementById('emptyStateTitle').textContent = 'No matching cruise items found';
+                    document.getElementById('emptyStateSub').textContent = 'Try clearing your active day filter or search query above.';
+                }
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            updateDashboard();
+            if (state.activeView === 'itinerary') {
+                renderItineraryView();
+            }
+        }
+
+        // Render View 2: 8-Day Route & Port Guide with Interactive Checkboxes
+        function renderItineraryView() {
+            const container = document.getElementById('itineraryCardsContainer');
+            if (!container) return;
+
+            container.innerHTML = CRUISE_DAYS.map(day => {
+                const dayItems = state.items.filter(item => Array.isArray(item.days) && item.days.includes(day.id));
+                const packedCount = dayItems.filter(i => i.packed).length;
+                const totalCount = dayItems.length;
+                const pct = totalCount === 0 ? 0 : Math.round((packedCount / totalCount) * 100);
+                const isDayReady = totalCount > 0 && packedCount === totalCount;
+
+                const gearListHTML = dayItems.map(item => `
+                    <label class="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border cursor-pointer transition select-none ${
+                        item.packed 
+                        ? 'bg-slate-50/80 border-slate-100 text-slate-400' 
+                        : 'bg-white border-slate-200/80 hover:border-ocean-300 text-slate-800'
+                    }">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <input 
+                                type="checkbox" 
+                                ${item.packed ? 'checked' : ''} 
+                                onchange="toggleItem('${item.id}')"
+                                class="sr-only"
+                            >
+                            <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
+                                item.packed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'
+                            }">
+                                <i class="ph-bold ph-check text-xs ${item.packed ? 'opacity-100' : 'opacity-0'}"></i>
+                            </div>
+                            <span class="text-xs font-semibold truncate ${item.packed ? 'line-through' : ''}">${escapeHTML(item.name)}</span>
+                        </div>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 shrink-0">${item.qty}x</span>
+                    </label>
+                `).join('');
+
+                return `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+                        <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border ${day.badgeColor}">
+                                    ${day.dayNum}
+                                </span>
+                                <span class="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                                    <i class="ph-fill ph-thermometer-simple text-sunset-500"></i>
+                                    ${day.weather}
+                                </span>
+                            </div>
+                            <h3 class="font-display font-extrabold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                                <i class="ph-duotone ${day.icon} text-ocean-600 text-xl"></i>
+                                <span>${day.port}</span>
+                            </h3>
+                            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                                ${day.summary}
+                            </p>
+
+                            <!-- Day Gear Readiness Progress -->
+                            <div class="mt-3.5 pt-3 border-t border-slate-200/60 flex items-center justify-between gap-3">
+                                <span class="text-[11px] font-bold uppercase tracking-wider ${isDayReady ? 'text-emerald-600' : 'text-slate-500'}">
+                                    ${isDayReady ? '✓ All Day Gear Packed!' : `${day.dayNum} Gear Readiness: ${packedCount}/${totalCount}`}
+                                </span>
+                                <div class="w-28 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                    <div class="h-full ${isDayReady ? 'bg-emerald-500' : 'bg-ocean-500'} transition-all duration-300" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 space-y-2 flex-1 bg-white">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                                Essential Gear Linked to ${day.dayNum} (Click to Pack):
+                            </div>
+                            ${gearListHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleItem(id) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+            item.packed = !item.packed;
+            saveState();
+            renderChecklist();
+        }
+
+        function adjustQty(id, delta) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+            const newQty = (Number(item.qty) || 1) + delta;
+            if (newQty < 1 || newQty > 99) return;
+            item.qty = newQty;
+            saveState();
+            renderChecklist();
+        }
+
+        function deleteItem(id) {
+            const idx = state.items.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            const removedName = state.items[idx].name;
+            state.items.splice(idx, 1);
+            saveState();
+            renderChecklist();
+            showToast(`Removed "${removedName}"`, 'slate');
+        }
+
+        function toggleAllInCategory(categoryId) {
+            const catItems = state.items.filter(i => i.category === categoryId);
+            const allPacked = catItems.length > 0 && catItems.every(i => i.packed);
+            catItems.forEach(item => {
+                item.packed = !allPacked;
+            });
+            saveState();
+            renderChecklist();
+        }
+
+        function handleAddItem(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('customItemName');
+            const qtyInput = document.getElementById('customItemQty');
+            const categorySelect = document.getElementById('customItemCategory');
+            const daySelect = document.getElementById('customItemDay');
+
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            const qty = Math.max(1, Math.min(99, parseInt(qtyInput.value, 10) || 1));
+            const category = categorySelect.value;
+            const dayVal = daySelect.value;
+
+            const newItem = {
+                id: 'custom_' + Date.now(),
+                category,
+                name,
+                note: 'Custom added item for Serenade of the Seas',
+                qty,
+                days: dayVal === 'all' ? [] : [dayVal],
+                packed: false
+            };
+
+            state.items.unshift(newItem);
+            nameInput.value = '';
+            qtyInput.value = '1';
+
+            if (state.filter === 'packed') {
+                setFilter('all');
+            } else {
+                saveState();
+                renderChecklist();
+            }
+
+            showToast(`Added "${name}" (${qty}x) to checklist!`, 'ocean');
+        }
+
+        function setFilter(filterType) {
+            state.filter = filterType;
+            const filters = ['all', 'remaining', 'packed'];
+            filters.forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filterType) {
+                    btn.className = 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-ocean-700 shadow-sm';
+                } else {
+                    btn.className = 'flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
+                }
+            });
+            renderChecklist();
+        }
+
+        function setDayFilter(dayId) {
+            state.dayFilter = state.dayFilter === dayId && dayId !== 'all' ? 'all' : dayId;
+            renderChecklist();
+        }
+
+        function handleSearch(value) {
+            state.searchQuery = value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderChecklist();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            handleSearch('');
+        }
+
+        function resetFiltersAndSearch() {
+            clearSearch();
+            state.dayFilter = 'all';
+            setFilter('all');
+        }
+
+        function openModal(modalId) {
+            const m = document.getElementById(modalId);
+            if (m) {
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            }
+        }
+
+        function closeModal(modalId) {
+            const m = document.getElementById(modalId);
+            if (m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+        }
+
+        function buildCruiserTripSummaryText() {
+            const totalItems = state.items.length;
+            const packedItems = state.items.filter(i => i.packed).length;
+            const remainingItems = totalItems - packedItems;
+            const percentage = totalItems === 0 ? 0 : Math.round((packedItems / totalItems) * 100);
+            const shareUrl = generateShareableLink();
+
+            let txt = `ROYAL CARIBBEAN CRUISE PLANNER & PACKING MANIFEST\n`;
+            txt += `====================================================\n`;
+            txt += `Vessel: Serenade of the Seas (Radiance Class)\n`;
+            txt += `Reservation Number: 5527483\n`;
+            txt += `Assigned Stateroom: #4030 (Deck 4 - Forward/Midship)\n`;
+            txt += `Port: San Diego -> Ensenada -> Cabo San Lucas -> La Paz\n\n`;
+            txt += `🔗 DIRECT INTERACTIVE WEB LINK:\n${shareUrl}\n\n`;
+            txt += `READINESS PROGRESS: ${percentage}% (${packedItems}/${totalItems} items packed, ${remainingItems} remaining)\n`;
+            txt += `----------------------------------------------------\n`;
+            txt += `- Stateroom 4030 walls are steel (pack magnetic hooks!)\n`;
+            txt += `- Surge protectors are prohibited; pack a non-surge USB hub.\n`;
+            txt += `- Cabo is a tender port; bring a water-resistant dry bag.\n`;
+            return txt;
+        }
+
+        // Direct Gmail Web Composer Opener with Safe URL length
+        function sendViaGmailWeb() {
+            const emailInput = document.getElementById('cruiserEmailInput');
+            const recipient = emailInput ? emailInput.value.trim() : '';
+            const shareUrl = generateShareableLink();
+            const subject = 'Serenade of the Seas Cruise Info & Packing List (Res #5527483 • Stateroom 4030)';
+
+            // Keep body safe and concise so Gmail URL never throws Error 400
+            const body = 
+`Hi! Here is our interactive Cruise Planner and Packing Checklist for our Royal Caribbean cruise:
+
+🚢 Vessel: Serenade of the Seas
+🔖 Reservation #: 5527483
+🚪 Stateroom: #4030 (Deck 4)
+🗺️ Route: San Diego • Ensenada • Cabo San Lucas • La Paz
+
+Open this interactive link to view what is already packed and check off gear:
+${shareUrl}
+
+See you on Deck 4!`;
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1` +
+                (recipient ? `&to=${encodeURIComponent(recipient)}` : '') +
+                `&su=${encodeURIComponent(subject)}` +
+                `&body=${encodeURIComponent(body)}`;
+
+            window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+            showToast('Opening Gmail web composer with shareable link!', 'emerald');
+            closeModal('shareTripModal');
+        }
+
+        function openShareTripModal() {
+            const totalItems = state.items.length;
+            const packedItems = state.items.filter(i => i.packed).length;
+            const remainingItems = totalItems - packedItems;
+            const percentage = totalItems === 0 ? 0 : Math.round((packedItems / totalItems) * 100);
+
+            const progSnippet = document.getElementById('shareProgressSnippet');
+            const remSnippet = document.getElementById('shareRemainingSnippet');
+            const previewArea = document.getElementById('messagePreviewArea');
+            const linkInput = document.getElementById('shareLinkInput');
+
+            if (progSnippet) progSnippet.textContent = `Readiness: ${percentage}% packed (${packedItems}/${totalItems} items)`;
+            if (remSnippet) remSnippet.textContent = `${remainingItems} items left to pack`;
+
+            const shareUrl = generateShareableLink();
+            if (linkInput) linkInput.value = shareUrl;
+
+            const fullText = buildCruiserTripSummaryText();
+            if (previewArea) previewArea.textContent = fullText;
+
+            openModal('shareTripModal');
+        }
+
+        function sendEmailToCruiser() {
+            const emailInput = document.getElementById('cruiserEmailInput');
+            const recipient = (emailInput ? emailInput.value.trim() : '');
+            const shareUrl = generateShareableLink();
+            const subject = encodeURIComponent('Serenade of the Seas Cruise Info & Packing List (Res #5527483)');
+            const bodyText = `Here is our Serenade of the Seas checklist link:\n${shareUrl}\n\nReservation #5527483 • Stateroom #4030`;
+            const body = encodeURIComponent(bodyText);
+
+            const mailtoUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
+            window.location.href = mailtoUrl;
+
+            showToast('Opening default email app!', 'emerald');
+            closeModal('shareTripModal');
+        }
+
+        async function shareViaWebShare() {
+            const shareUrl = generateShareableLink();
+            const shareData = {
+                title: 'Serenade of the Seas - Res #5527483 (Stateroom 4030)',
+                text: `Royal Caribbean Cruise Checklist (Reservation #5527483 • Stateroom #4030):\n`,
+                url: shareUrl
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    showToast('Shared successfully!', 'emerald');
+                    closeModal('shareTripModal');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyShareableWebLink('modal');
+                    }
+                }
+            } else {
+                copyShareableWebLink('modal');
+            }
+        }
+
+        function copyFullPackingSummary() {
+            const summary = buildCruiserTripSummaryText();
+            const tempInput = document.createElement('textarea');
+            tempInput.value = summary;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast('Copied full cruise & packing summary to clipboard!', 'emerald');
+            } catch (err) {
+                showToast('Could not copy text. Please select from preview.', 'amber');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function triggerPrintChecklist() {
+            closeModal('shareTripModal');
+            switchMainView('checklist');
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+
+        function confirmUncheckAll() {
+            state.items.forEach(item => {
+                item.packed = false;
+            });
+            state.hasCelebrated100 = false;
+            saveState();
+            closeModal('uncheckModal');
+            renderChecklist();
+            showToast('All checkboxes cleared for Reservation #5527483!', 'amber');
+        }
+
+        function confirmRestoreDefaults() {
+            state.items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+            state.hasCelebrated100 = false;
+            saveState();
+            closeModal('resetDefaultModal');
+            resetFiltersAndSearch();
+            renderChecklist();
+            showToast('Restored default Serenade of the Seas (#4030) checklist!', 'ocean');
+        }
+
+        function triggerCelebrationConfetti() {
+            if (typeof confetti !== 'function') return;
+            const duration = 2800;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.65 },
+                    colors: ['#0d9488', '#0ea5e9', '#f97316', '#facc15', '#10b981']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.65 },
+                    colors: ['#0d9488', '#0ea5e9', '#f97316', '#facc15', '#10b981']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        }
+
+        function showToast(message, tone = 'ocean') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgMap = {
+                ocean: 'bg-ocean-800 text-white border-ocean-600',
+                emerald: 'bg-emerald-700 text-white border-emerald-500',
+                amber: 'bg-amber-600 text-white border-amber-400',
+                slate: 'bg-slate-800 text-white border-slate-600'
+            };
+            toast.className = `px-4 py-2.5 rounded-xl shadow-lg border text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgMap[tone] || bgMap.ocean}`;
+            toast.innerHTML = `<i class="ph-fill ph-anchor text-base"></i><span>${escapeHTML(message)}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        window.onload = function () {
+            loadState();
+            renderChecklist();
+        };
+    </script>
+</body>
+</html>
